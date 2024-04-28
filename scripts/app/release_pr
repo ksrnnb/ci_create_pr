@@ -19,7 +19,7 @@ main() {
     local service_name=${1}
     local version=${2}
     local github_token=${3}
-    local branch_name="release/$(echo ${service_name})_$(echo ${version})"
+    local branch_name="release_$(echo ${service_name})_$(echo ${version})"
 
     echo "[INFO] Running 'scripts/app/release_pr' for ${service_name}"
 
