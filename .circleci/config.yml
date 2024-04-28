@@ -36,6 +36,9 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:7p8XHnZsyzH7w0g/mBhp4dEeHNO6gPyTV5io5esfZPs"
       - set_up_git
       - create_pr
 
