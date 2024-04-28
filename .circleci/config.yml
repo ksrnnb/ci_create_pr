@@ -95,6 +95,6 @@ workflows:
       - create_pr_job:
           filters:
             tags:
-              only: /.*/
+              only: /^microservices.*/
             branches:
               ignore: /.*/
