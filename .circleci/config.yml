@@ -5,7 +5,7 @@ commands:
       - run:
           name: install commands
           command: |
-            apk add curl jq yq git bash openssh
+            apk add curl jq yq git bash openssh make
   set_up_git:
     steps:
       - checkout
