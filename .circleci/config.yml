@@ -24,10 +24,11 @@ commands:
       - run:
           name: Create and push changes
           command: |
-            echo $BRANCH_NAME
             git switch -c $BRANCH_NAME
 
             deployment_files=$(find . -type d -name "Deployment" -exec find {} -type f -name "*.yaml" \;)
+            echo $deployment_files
+            echo $(ls -a)
             for file in $deployment_file; do
               echo "Updating file: $file"
 
