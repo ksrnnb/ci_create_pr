@@ -12,9 +12,12 @@ commands:
     steps:
       - checkout
       - run:
+          name: set branch name
+          command: |
+            echo 'export BRANCH_NAME="hoge_service_$(echo ${CIRCLE_TAG})"' >> $BASH_ENV
+      - run:
           name: Create and push changes
           command: |
-            echo 'export BRANCH_NAME="hoge_service_${CIRCLE_TAG}"' >> $BASH_ENV
             git switch -c $BRANCH_NAME
             echo "Some changes" >> file.txt
             git add .
