@@ -20,7 +20,11 @@ commands:
       - run:
           name: set branch name
           command: |
-            echo 'export BRANCH_NAME="hoge_service_$(echo ${CIRCLE_TAG})"' >> $BASH_ENV
+            export SERVICE_NAME=$(echo ${CIRCLE_TAG} | cut -d/ -f-2)
+            export VERSION=$(echo $CIRCLE_TAG | cut -d/ -f3)
+            echo 'export SERVICE_NAME=$(echo $SERVICE_NAME)' >> $BASH_ENV
+            echo 'export VERSION=$(echo $VERSION)' >> $BASH_ENV
+            echo 'export BRANCH_NAME="release_$(echo ${SERVICE_NAME})_$(echo ${VERSION})"' >> $BASH_ENV
       - run:
           name: Create and push changes
           command: |
@@ -31,17 +35,17 @@ commands:
               echo "Updating file: $file"
 
               # tags.datadoghq.com/version を更新
-              yq e ".metadata.labels[\"tags.datadoghq.com/version\"] = \"$CIRCLE_TAG\"" -i "$file"
-              yq e ".spec.template.metadata.labels[\"tags.datadoghq.com/version\"] = \"$CIRCLE_TAG\"" -i "$file"
+              yq e ".metadata.labels[\"tags.datadoghq.com/version\"] = \"$VERSION\"" -i "$file"
+              yq e ".spec.template.metadata.labels[\"tags.datadoghq.com/version\"] = \"$VERSION\"" -i "$file"
               
               # イメージタグのみを更新
-              yq e ".spec.template.spec.containers[].image |= sub(\":.*$\"; \":$CIRCLE_TAG\")" -i "$file"
+              yq e ".spec.template.spec.containers[].image |= sub(\":.*$\"; \":$VERSION\")" -i "$file"
 
               echo "Updated file: $file"
             done
 
             git add .
-            git commit -m "release: $CIRCLE_TAG"
+            git commit -m "release: $SERVICE_NAME $VERSION"
             git push origin $BRANCH_NAME
       - run:
           name: Create pull request
