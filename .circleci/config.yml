@@ -33,7 +33,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "SHA256:7p8XHnZsyzH7w0g/mBhp4dEeHNO6gPyTV5io5esfZPs"
+            - "SHA256:AFsvL3Zj8Aijf3cuVNIWv3+ADCoWRr7b89jIC6HKRcE"
       - install_commands
       - set_up_git
       - release_pr
