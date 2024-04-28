@@ -34,6 +34,7 @@ commands:
           name: Create pull request
           # ref: https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#create-a-pull-request
           command: |
+            echo "${BRANCH_NAME}"
             response=$(curl -s -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
@@ -42,7 +43,9 @@ commands:
             https://api.github.com/repos/ksrnnb/ci_create_pr/pulls \
             -d '{"title": "create PR test", "body": "PR body dayo", "head": "${BRANCH_NAME}", "base": "main"}')
 
-            pr_url=$(echo $response | jq -r '.html_url')
+            # `// empty`` is used to convert null to empty string
+            # ref: https://jqlang.github.io/jq/manual/#:~:text=Example-,empty,-empty%20returns%20no
+            pr_url=$(echo $response | jq -r '.html_url // empty')
             if [ -z "$pr_url" ]; then
               echo "Error: PR URL not found in the response."
               exit 1
