@@ -25,7 +25,7 @@ main() {
 
     git switch -c $branch_name
 
-    deployment_files=$(find . -type d -name "Deployment" -exec find {} -type f -name "*.yaml" \;)
+    deployment_files=$(find ./microsercies/${service_name} -type d -name "Deployment" -exec find {} -type f -name "*.yaml" \;)
     for file in $deployment_files; do
         echo "[INFO] Updating file: $file"
 
