@@ -27,6 +27,8 @@ commands:
             echo "==="
             echo ${SERVICE_NAME}
             echo ${VERSION}
+            export HOGE="release_$(echo ${SERVICE_NAME})_$(echo ${VERSION})"
+            echo $HOGE
             echo 'export SERVICE_NAME="$(echo $SERVICE_NAME)"' >> $BASH_ENV
             echo 'export VERSION="$(echo $VERSION)"' >> $BASH_ENV
             echo 'export BRANCH_NAME="release_$(echo ${SERVICE_NAME})_$(echo ${VERSION})"' >> $BASH_ENV
