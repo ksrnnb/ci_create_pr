@@ -53,7 +53,7 @@ main() {
         -d "{ \
             \"title\": \"release: ${service_name} ${version}\", \
             \"body\": \"release ${service_name} ${version}\", \
-            \"head\": \"${BRANCH_NAME}\", \
+            \"head\": \"${branch_name}\", \
             \"base\": \"main\" \
         }")
 
