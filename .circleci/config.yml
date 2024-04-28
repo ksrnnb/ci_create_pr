@@ -14,7 +14,7 @@ commands:
           command: |
             git config user.email $GITHUB_EMAIL
             git config user.name $GITHUB_USER
-  create_pr:
+  release_pr:
     steps:
       - checkout
       - run:
