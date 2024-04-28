@@ -1,19 +1,11 @@
 version: 2.1
 commands:
-  install_jq:
+  install_commands:
     steps:
       - run:
-          name: install jq command
+          name: install commands
           command: |
-            sudo apt-get update
-            sudo apt-get install -y jq
-  install_yq:
-    steps:
-      - run:
-          name: install yq command
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y yq
+            apk add curl jq yq
   set_up_git:
     steps:
       - checkout
@@ -75,13 +67,12 @@ commands:
 jobs:
   create_pr_job:
     docker:
-      - image: cimg/base:stable
+      - image: alpine:3.19.0
     steps:
       - add_ssh_keys:
           fingerprints:
             - "SHA256:7p8XHnZsyzH7w0g/mBhp4dEeHNO6gPyTV5io5esfZPs"
-      - install_jq
-      - install_yq
+      - install_commands
       - set_up_git
       - create_pr
 
