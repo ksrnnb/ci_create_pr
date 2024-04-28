@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: hoge
-    tags.datadoghq.com/version: "0.0.0"
+    tags.datadoghq.com/version: "0.0.24"
   name: hoge
 spec:
   replicas: 1
@@ -14,8 +14,8 @@ spec:
     metadata:
       labels:
         app: hoge
-        tags.datadoghq.com/version: "0.0.0"
+        tags.datadoghq.com/version: "0.0.24"
     spec:
       containers:
         - name: hoge
-          image: hogehogepiyopiyo/foo/bar:0.0.0
+          image: hogehogepiyopiyo/foo/bar:0.0.24
