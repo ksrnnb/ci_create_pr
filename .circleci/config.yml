@@ -18,20 +18,20 @@ commands:
     steps:
       - checkout
       - run:
-          name: set branch name
+          name: set env name
           command: |
             export SERVICE_NAME=$(echo ${CIRCLE_TAG} | cut -d/ -f2)
             export VERSION=$(echo $CIRCLE_TAG | cut -d/ -f3)
             export BRANCH_NAME="release_$(echo ${SERVICE_NAME})_$(echo ${VERSION})"
 
-            echo 'export SERVICE_NAME=$(echo $SERVICE_NAME)' >> $BASH_ENV
-            echo 'export VERSION=$(echo $VERSION)' >> $BASH_ENV
-            echo 'export BRANCH_NAME=${BRANCH_NAME}' >> $BASH_ENV
-            echo $BRANCH_NAME
+            touch .env_variable_for_ash
+            echo 'export SERVICE_NAME=$(echo $SERVICE_NAME)' >> .env_variable_for_ash
+            echo 'export VERSION=$(echo $VERSION)' >> .env_variable_for_ash
+            echo 'export BRANCH_NAME=${BRANCH_NAME}' >> .env_variable_for_ash
       - run:
           name: Create and push changes
           command: |
-            echo $BRANCH_NAME
+            source .env_variable_for_ash
 
             git switch -c $BRANCH_NAME
 
@@ -56,6 +56,8 @@ commands:
           name: Create pull request
           # ref: https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#create-a-pull-request
           command: |
+            source .env_variable_for_ash
+
             response=$(curl -s -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
@@ -82,9 +84,6 @@ jobs:
   create_pr_job:
     docker:
       - image: alpine:3.19.0
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       - add_ssh_keys:
           fingerprints:
