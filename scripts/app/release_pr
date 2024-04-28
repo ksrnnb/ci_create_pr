@@ -19,7 +19,7 @@ main() {
     local service_name=${1}
     local version=${2}
     local github_token=${3}
-    local branch_name="release_$(echo ${service_name})_$(echo ${version})"
+    local branch_name="release/$(echo ${service_name})_$(echo ${version})"
 
     echo "[INFO] Running 'scripts/app/release_pr' for ${service_name}"
 
@@ -61,7 +61,7 @@ main() {
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${github_token}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        https://api.github.com/repos/ksrnnb/ci_create_pr/pulls \
+        https://api.github.com/repos/test-organization-to-check-ci-cd-flow/ci_create_pr/pulls \
         -d "{ \
             \"title\": \"release: ${service_name} ${version}\", \
             \"body\": \"release ${service_name} ${version}\", \
