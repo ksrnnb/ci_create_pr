@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hoge
+    tags.datadoghq.com/version: "0.0.0"
+  name: hoge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hoge
+  template:
+    metadata:
+      labels:
+        app: hoge
+        tags.datadoghq.com/version: "0.0.0"
+    spec:
+      containers:
+        - name: hoge
+          image: hogehogepiyopiyo/foo/bar:0.0.0
