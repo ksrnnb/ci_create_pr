@@ -1,0 +1,62 @@
+name: Update PR kind label
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  check-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Check for labels
+        id: labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // label name
+            const BUG_FIX = 'Bug fix';
+            const NEW_FEATURE = 'New feature / Improvement';
+            const RELEASE = 'Release';
+            const OTHERS = 'Others';
+            const payload = context.payload.pull_request;
+            const currentKindLabelNames = payload.labels.map(label => label.name);
+            const title = payload.title;
+            const newLabelName = (() => {
+              if (title.startsWith("feat")) {
+                return NEW_FEATURE;
+              }
+              if (title.startsWith("fix")) {
+                return BUG_FIX;
+              }
+              if (title.startsWith("release")) {
+                return RELEASE;
+              }
+              return OTHERS;
+            })();
+            const labelsToAdd = currentKindLabelNames.includes(newLabelName) ? [] : [newLabelName];
+            const labelsToRemove = currentKindLabelNames.filter(currentKindLabelName => currentKindLabelName !== newLabelName);
+            // add kind label
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labelsToAdd,
+              });
+            }
+            // remove unnecessary kind labels
+            if (labelsToRemove.length > 0) {
+              labelsToRemove.forEach(async (label) => {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                name: label
+              });
+            })}
