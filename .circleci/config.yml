@@ -24,9 +24,9 @@ commands:
             export VERSION=$(echo $CIRCLE_TAG | cut -d/ -f3)
             export BRANCH_NAME="release_$(echo ${SERVICE_NAME})_$(echo ${VERSION})"
 
-            echo 'export SERVICE_NAME=$(echo $SERVICE_NAME)' >> $BASH_ENV
-            echo 'export VERSION=$(echo $VERSION)' >> $BASH_ENV
-            echo 'export BRANCH_NAME=$(echo BRANCH_NAME)' >> $BASH_ENV
+            echo 'export SERVICE_NAME="$(echo $SERVICE_NAME)"' >> $BASH_ENV
+            echo 'export VERSION="$(echo $VERSION)"' >> $BASH_ENV
+            echo 'export BRANCH_NAME="$(echo $BRANCH_NAME)"' >> $BASH_ENV
       - run:
           name: Create and push changes
           command: |
