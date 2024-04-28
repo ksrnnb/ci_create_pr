@@ -14,6 +14,7 @@ commands:
       - run:
           name: Create and push changes
           command: |
+            echo 'export BRANCH_NAME="hoge_service_${CIRCLE_TAG}"' >> $BASH_ENV
             git switch -c $BRANCH_NAME
             echo "Some changes" >> file.txt
             git add .
@@ -34,8 +35,6 @@ jobs:
   create_pr_job:
     docker:
       - image: cimg/base:stable
-    environment:
-      BRANCH_NAME: "hoge_service_${CIRCLE_TAG}"
     steps:
       - set_up_git
       - create_pr
