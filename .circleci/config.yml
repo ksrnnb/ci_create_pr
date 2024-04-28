@@ -27,9 +27,7 @@ commands:
             git switch -c $BRANCH_NAME
 
             deployment_files=$(find . -type d -name "Deployment" -exec find {} -type f -name "*.yaml" \;)
-            echo $deployment_files
-            echo $(ls -a)
-            for file in $deployment_file; do
+            for file in $deployment_files; do
               echo "Updating file: $file"
 
               # tags.datadoghq.com/version を更新
