@@ -34,6 +34,8 @@ jobs:
   create_pr_job:
     docker:
       - image: cimg/base:stable
+    environment:
+      BRANCH_NAME: "hoge_service_${CIRCLE_TAG}"
     steps:
       - set_up_git
       - create_pr
