@@ -26,7 +26,7 @@ commands:
 
             echo 'export SERVICE_NAME=$(echo $SERVICE_NAME)' >> $BASH_ENV
             echo 'export VERSION=$(echo $VERSION)' >> $BASH_ENV
-            echo 'export BRANCH_NAME=$(echo $BRANCH_NAME)' >> $BASH_ENV
+            echo 'export BRANCH_NAME=${BRANCH_NAME}' >> $BASH_ENV
             echo $BRANCH_NAME
       - run:
           name: Create and push changes
