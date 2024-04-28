@@ -27,7 +27,7 @@ main() {
 
     deployment_files=$(find . -type d -name "Deployment" -exec find {} -type f -name "*.yaml" \;)
     for file in $deployment_files; do
-        echo "Updating file: $file"
+        echo "[INFO] Updating file: $file"
 
         # tags.datadoghq.com/version を更新
         yq e ".metadata.labels[\"tags.datadoghq.com/version\"] = \"${version}\"" -i "$file"
@@ -35,13 +35,13 @@ main() {
         
         # イメージタグのみを更新
         yq e ".spec.template.spec.containers[].image |= sub(\":.*$\"; \":${version}\")" -i "$file"
-
-        echo "Updated file: $file"
     done
 
     git add .
     git commit -m "release: ${service_name} ${version}"
     git push origin $branch_name
+
+    echo "[INFO] Git push has completed"
 
     # create PR
     response=$(curl -s -L \
@@ -61,9 +61,11 @@ main() {
     # ref: https://jqlang.github.io/jq/manual/#:~:text=Example-,empty,-empty%20returns%20no
     pr_url=$(echo $response | jq -r '.html_url // empty')
     if [ -z "$pr_url" ]; then
-        echo "Error: PR URL not found in the response."
+        echo "[Error] PR URL not found in the response."
         exit 1
     fi
+
+    echo "[INFO] release PR has been created"
 
     echo $pr_url
 }
