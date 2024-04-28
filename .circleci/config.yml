@@ -31,6 +31,7 @@ commands:
       - run:
           name: Create and push changes
           command: |
+            cat .env_variable_for_ash
             source .env_variable_for_ash
 
             git switch -c $BRANCH_NAME
