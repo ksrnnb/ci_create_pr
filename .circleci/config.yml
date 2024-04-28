@@ -69,6 +69,9 @@ jobs:
   create_pr_job:
     docker:
       - image: alpine:3.19.0
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       - add_ssh_keys:
           fingerprints:
