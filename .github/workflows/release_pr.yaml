@@ -1,0 +1,52 @@
+name: Label and Reviewer Automation
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  add-label-and-reviewer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Get all changed microservices files
+        id: changed-microservice-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            microservices/**
+      - name: Add 'Release' label and assign reviewers
+        if: contains(github.event.pull_request.title, 'release:')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const changedFiles = "${{ steps.changed-microservice-files.outputs.all_changed_files }}".split(" ");
+            const changedServiceNames = new Set();
+
+            changedFiles.forEach((file) => {
+              const directories = file.split('/');
+              if (directories.length > 1) {
+                // microservices/{service_name}/**
+                // => directories = ["microservices", {service_name}, ...]
+                const serviceName = directories[1];
+                changedServiceNames.add(serviceName);
+              }
+            });
+
+            const reviewers = Array.from(changedServiceNames).map(serviceName => `${serviceName}-prod-writer`);
+            // Add reviewers
+            await github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.pull.number,
+              reviewers: reviewers,
+            });
+
+            // Add 'Release' label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['Release']
+            });
