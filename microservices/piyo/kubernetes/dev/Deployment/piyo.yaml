@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: piyo
+    tags.datadoghq.com/version: "0.0.0"
+  name: piyo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: piyo
+  template:
+    metadata:
+      labels:
+        app: piyo
+        tags.datadoghq.com/version: "0.0.0"
+    spec:
+      containers:
+        - name: piyo
+          image: hogehogepiyopiyo/foo/bar:0.0.0
