@@ -22,6 +22,11 @@ commands:
           command: |
             export SERVICE_NAME=$(echo ${CIRCLE_TAG} | cut -d/ -f2)
             export VERSION=$(echo $CIRCLE_TAG | cut -d/ -f3)
+            echo $SERVICE_NAME
+            echo $VERSION
+            echo "==="
+            echo ${CIRCLE_TAG} | cut -d/ -f2
+            echo $CIRCLE_TAG | cut -d/ -f3
             echo 'export SERVICE_NAME="$(echo $SERVICE_NAME)"' >> $BASH_ENV
             echo 'export VERSION="$(echo $VERSION)"' >> $BASH_ENV
             echo 'export BRANCH_NAME="release_$(echo ${SERVICE_NAME})_$(echo ${VERSION})"' >> $BASH_ENV
