@@ -7,6 +7,13 @@ commands:
           command: |
             sudo apt-get update
             sudo apt-get install -y jq
+  install_yq:
+    steps:
+      - run:
+          name: install yq command
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y yq
   set_up_git:
     steps:
       - checkout
@@ -26,15 +33,28 @@ commands:
           name: Create and push changes
           command: |
             git switch -c $BRANCH_NAME
-            echo "Some changes" >> file.txt
+
+            deployment_files=$(find . -type d -name "Deployment" -exec find {} -type f -name "*.yaml" \;)
+            for file in $deployment_file; do
+              echo "Updating file: $file"
+
+              # tags.datadoghq.com/version を更新
+              yq e ".metadata.labels[\"tags.datadoghq.com/version\"] = \"$CIRCLE_TAG\"" -i "$file"
+              yq e ".spec.template.metadata.labels[\"tags.datadoghq.com/version\"] = \"$CIRCLE_TAG\"" -i "$file"
+              
+              # イメージタグのみを更新
+              yq e "(.spec.template.spec.containers[].image |= sub(\":.*$\"; \":$CIRCLE_TAG\")" -i "$file"
+
+              echo "Updated file: $file"
+            done
+
             git add .
-            git commit -m "Update file.txt"
+            git commit -m "release: $CIRCLE_TAG"
             git push origin $BRANCH_NAME
       - run:
           name: Create pull request
           # ref: https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#create-a-pull-request
           command: |
-            echo "${BRANCH_NAME}"
             response=$(curl -s -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
@@ -61,6 +81,7 @@ jobs:
           fingerprints:
             - "SHA256:7p8XHnZsyzH7w0g/mBhp4dEeHNO6gPyTV5io5esfZPs"
       - install_jq
+      - install_yq
       - set_up_git
       - create_pr
 
