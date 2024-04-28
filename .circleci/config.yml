@@ -5,7 +5,7 @@ commands:
       - run:
           name: install commands
           command: |
-            apk add curl jq yq
+            apk add curl jq yq git bash
   set_up_git:
     steps:
       - checkout
