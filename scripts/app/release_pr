@@ -43,7 +43,7 @@ main() {
 
     echo "[INFO] Git push has completed"
 
-    create PR
+    # create PR
     response=$(curl -s -L \
         -X POST \
         -H "Accept: application/vnd.github+json" \
