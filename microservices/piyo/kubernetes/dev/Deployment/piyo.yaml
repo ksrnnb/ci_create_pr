@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: piyo
-    tags.datadoghq.com/version: "0.0.0"
+    tags.datadoghq.com/version: "0.0.4"
   name: piyo
 spec:
   replicas: 1
@@ -14,8 +14,8 @@ spec:
     metadata:
       labels:
         app: piyo
-        tags.datadoghq.com/version: "0.0.0"
+        tags.datadoghq.com/version: "0.0.4"
     spec:
       containers:
         - name: piyo
-          image: hogehogepiyopiyo/foo/bar:0.0.0
+          image: hogehogepiyopiyo/foo/bar:0.0.4
