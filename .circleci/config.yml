@@ -37,17 +37,17 @@ commands:
               echo "Updating file: $file"
 
               # tags.datadoghq.com/version を更新
-              yq e ".metadata.labels[\"tags.datadoghq.com/version\"] = \"$VERSION\"" -i "$file"
-              yq e ".spec.template.metadata.labels[\"tags.datadoghq.com/version\"] = \"$VERSION\"" -i "$file"
+              yq e ".metadata.labels[\"tags.datadoghq.com/version\"] = \"${VERSION}\"" -i "$file"
+              yq e ".spec.template.metadata.labels[\"tags.datadoghq.com/version\"] = \"${VERSION}\"" -i "$file"
               
               # イメージタグのみを更新
-              yq e ".spec.template.spec.containers[].image |= sub(\":.*$\"; \":$VERSION\")" -i "$file"
+              yq e ".spec.template.spec.containers[].image |= sub(\":.*$\"; \":${VERSION}\")" -i "$file"
 
               echo "Updated file: $file"
             done
 
             git add .
-            git commit -m "release: $SERVICE_NAME $VERSION"
+            git commit -m "release: ${SERVICE_NAME} ${VERSION}"
             git push origin $BRANCH_NAME
       - run:
           name: Create pull request
