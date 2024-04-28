@@ -39,7 +39,7 @@ jobs:
             await github.rest.pulls.requestReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.pull.number,
+              pull_number: context.issue.number,
               reviewers: reviewers,
             });
 
