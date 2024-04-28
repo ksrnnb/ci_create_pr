@@ -2,6 +2,7 @@ version: 2.1
 commands:
   set_up_git:
     steps:
+      - checkout
       - run:
           name: setup git user
           command: |
@@ -9,6 +10,7 @@ commands:
             git config user.name $GITHUB_USER
   create_pr:
     steps:
+      - checkout
       - run:
           name: Create and push changes
           command: |
@@ -40,4 +42,7 @@ workflows:
   version: 2
   build:
     jobs:
-      - create_pr_job
+      - create_pr_job:
+          filters:
+            tags:
+              only: /.*/
