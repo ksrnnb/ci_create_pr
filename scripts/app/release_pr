@@ -1,3 +1,5 @@
+#!/bin/bash
+
 usage() {
 	echo ""
 	echo "Usage: scripts/app/release_pr SERVICE_NAME VERSION GITHUB_TOKEN"
