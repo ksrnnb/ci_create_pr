@@ -38,8 +38,8 @@ main() {
         yq e ".metadata.labels[\"tags.datadoghq.com/version\"] = \"${version}\"" -i "$file"
         yq e ".spec.template.metadata.labels[\"tags.datadoghq.com/version\"] = \"${version}\"" -i "$file"
         
-        # イメージタグのみを更新
-        yq e ".spec.template.spec.containers[].image |= sub(\":.*$\"; \":${version}\")" -i "$file"
+        # service のイメージのタグのみを更新
+        yq e ".spec.template.spec.containers[] |= (select(.image | contains(\"${service_name}\")) .image |= sub(\":.*$\"; \":${version}\"))" -i "$file"
     done
 
     git add .
