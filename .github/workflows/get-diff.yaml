@@ -15,6 +15,7 @@ jobs:
         run: |
           # 最後にコミットされた状態と比較して変更されたディレクトリを取得
           echo "base ref: ${{ github.base_ref }}"
+          echo "head ref: ${{ github.head_ref }}"
           git fetch origin ${{ github.base_ref }}
           changed_dirs=$(git diff --name-only origin/${{ github.base_ref }} HEAD -- microservices | awk -F'/' '{print $2}' | sort -u | tr '\n' ' ')
           echo "Changed files: $changed_dirs"
