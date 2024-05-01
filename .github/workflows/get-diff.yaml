@@ -13,7 +13,7 @@ jobs:
       - name: Get changed directories
         id: get_changed_dirs
         run: |
-          echo "github.base_ref: $${{ github.base_ref }}"
+          echo "github.base_ref: ${{ github.base_ref }}"
           git fetch origin ${{ github.base_ref }}
           echo "fetched"
           base_commit=$(git merge-base origin/"${{ github.base_ref }}" HEAD)
