@@ -14,7 +14,8 @@ jobs:
         id: get_changed_dirs
         run: |
           git fetch origin ${{ github.base_ref }}
-          changed_dirs=$(git diff --name-only origin/${{ github.base_ref }} HEAD -- microservices | awk -F'/' '{print $2}' | sort -u | xargs)
+          base_commit=$(git merge-base ${{ github.base_ref }} HEAD)
+          changed_dirs=$(git diff --name-only $base_commit HEAD -- microservices | awk -F'/' '{print $2}' | sort -u | xargs)
           echo "Changed files: $changed_dirs"
           echo "changed_dirs=$changed_dirs" >> $GITHUB_OUTPUT
 
