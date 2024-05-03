@@ -1,0 +1,102 @@
+name: update service label
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited]
+
+jobs:
+  add-label:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Get changed directories
+        id: get_changed_dirs
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          changed_dirs=$(git diff --name-only origin/${{ github.base_ref }} HEAD -- microservices | awk -F'/' '{print $2}' | sort -u | xargs)
+          echo "Changed dirs: $changed_dirs"
+          echo "changed_dirs=$changed_dirs" >> $GITHUB_OUTPUT
+
+      - name: Use outputs in next steps
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labelsToAdd = new Set();
+            const labelColor = '0052CD';
+            const changedDirs = "${{ steps.get_changed_dirs.outputs.changed_dirs }}".split(" ");
+
+            console.log(changedDirs)
+
+            const currentLabels = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+
+
+            // filter by color to get services' label
+            const currentServiceLabelNames = currentLabels.data.filter(label => label.color === labelColor).map(label => label.name);
+            const changedServiceNames = new Set();
+
+            changedDirs.forEach((serviceName) => {
+              changedServiceNames.add(serviceName);
+              if (!currentServiceLabelNames.includes(serviceName)) {
+                labelsToAdd.add(serviceName);
+              }
+            });
+
+            const labelsToRemove = new Set(
+              [...currentServiceLabelNames].filter(currentServiceLabelName => !changedServiceNames.has(currentServiceLabelName))
+            );
+
+            // Output log
+            console.log("currentServiceLabelNames", currentServiceLabelNames);
+            console.log("changedServiceNames", changedServiceNames);
+            console.log("labelsToAdd", labelsToAdd);
+            console.log("labelsToRemove", labelsToRemove);
+
+            if (labelsToAdd.size === 0 && labelsToRemove.size === 0) {
+              return;
+            }
+
+            if (labelsToAdd.size > 0) {
+              Array.from(labelsToAdd).forEach(async (label) => {
+                // Create a service label
+                try {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label,
+                    color: labelColor
+                  });
+                } catch (error) {
+                  // status 422 means that a label has already created
+                  // https://docs.github.com/ja/rest/issues/labels?apiVersion=2022-11-28#create-a-label--status-codes
+                  if (error.status !== 422) throw error;
+                }
+              });
+
+              // Assign new service labels
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: [...labelsToAdd]
+              });
+            }
+
+            // remove unnecessary service labels
+            if (labelsToRemove.size > 0) {
+              Array.from(labelsToRemove).forEach(async (label) => {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                name: label
+              });
+            })}
