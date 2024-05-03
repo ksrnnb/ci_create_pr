@@ -2,7 +2,7 @@ name: get changed dir
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, edited]
 
 jobs:
   add-label:
@@ -13,10 +13,10 @@ jobs:
       - name: Get changed directories
         id: get_changed_dirs
         run: |
-          # 最後にコミットされた状態と比較して変更されたディレクトリを取得
-          changed_dirs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '/' | awk -F'/' '{print $1}' | sort -u)
-          echo "Changed directories: $changed_dirs"
-          echo "::set-output name=changed_dirs::$changed_dirs"
+          git fetch origin ${{ github.base_ref }}
+          changed_dirs=$(git diff --name-only origin/${{ github.base_ref }} HEAD -- microservices | awk -F'/' '{print $2}' | sort -u | xargs)
+          echo "Changed dirs: $changed_dirs"
+          echo "changed_dirs=$changed_dirs" >> $GITHUB_OUTPUT
 
       - name: Use outputs in next steps
         run: |
