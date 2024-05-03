@@ -1,4 +1,4 @@
-name: get changed dir
+name: update service label
 
 on:
   pull_request:
@@ -24,7 +24,9 @@ jobs:
           script: |
             const labelsToAdd = new Set();
             const labelColor = '0052CD';
-            const changedDirs = "${{ steps.changed-microservice-files.outputs.changed_dirs }}".split(" ");
+            const changedDirs = "${{ steps.get_changed_dirs.outputs.changed_dirs }}".split(" ");
+
+            console.log(changedDirs)
 
             const currentLabels = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
