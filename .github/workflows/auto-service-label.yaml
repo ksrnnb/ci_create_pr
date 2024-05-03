@@ -26,6 +26,13 @@ jobs:
             const labelColor = '0052CD';
             const changedDirs = "${{ steps.changed-microservice-files.outputs.changed_dirs }}".split(" ");
 
+            const currentLabels = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+
+
             // filter by color to get services' label
             const currentServiceLabelNames = currentLabels.data.filter(label => label.color === labelColor).map(label => label.name);
             const changedServiceNames = new Set();
