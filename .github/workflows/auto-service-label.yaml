@@ -55,3 +55,44 @@ jobs:
             console.log("changedServiceNames", changedServiceNames);
             console.log("labelsToAdd", labelsToAdd);
             console.log("labelsToRemove", labelsToRemove);
+
+            if (labelsToAdd.size === 0 && labelsToRemove.size === 0) {
+              return;
+            }
+
+            if (labelsToAdd.size > 0) {
+              Array.from(labelsToAdd).forEach(async (label) => {
+                // Create a service label
+                try {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label,
+                    color: labelColor
+                  });
+                } catch (error) {
+                  // status 422 means that a label has already created
+                  // https://docs.github.com/ja/rest/issues/labels?apiVersion=2022-11-28#create-a-label--status-codes
+                  if (error.status !== 422) throw error;
+                }
+              });
+
+              // Assign new service labels
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: [...labelsToAdd]
+              });
+            }
+
+            // remove unnecessary service labels
+            if (labelsToRemove.size > 0) {
+              Array.from(labelsToRemove).forEach(async (label) => {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                name: label
+              });
+            })}
