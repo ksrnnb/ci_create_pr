@@ -19,5 +19,30 @@ jobs:
           echo "changed_dirs=$changed_dirs" >> $GITHUB_OUTPUT
 
       - name: Use outputs in next steps
-        run: |
-          echo "Changed directories are: ${{ steps.get_changed_dirs.outputs.changed_dirs }}"
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labelsToAdd = new Set();
+            const labelColor = '0052CD';
+            const changedDirs = "${{ steps.changed-microservice-files.outputs.changed_dirs }}".split(" ");
+
+            // filter by color to get services' label
+            const currentServiceLabelNames = currentLabels.data.filter(label => label.color === labelColor).map(label => label.name);
+            const changedServiceNames = new Set();
+
+            changedDirs.forEach((serviceName) => {
+              changedServiceNames.add(serviceName);
+              if (!currentServiceLabelNames.includes(serviceName)) {
+                labelsToAdd.add(serviceName);
+              }
+            });
+
+            const labelsToRemove = new Set(
+              [...currentServiceLabelNames].filter(currentServiceLabelName => !changedServiceNames.has(currentServiceLabelName))
+            );
+
+            // Output log
+            console.log("currentServiceLabelNames", currentServiceLabelNames);
+            console.log("changedServiceNames", changedServiceNames);
+            console.log("labelsToAdd", labelsToAdd);
+            console.log("labelsToRemove", labelsToRemove);
