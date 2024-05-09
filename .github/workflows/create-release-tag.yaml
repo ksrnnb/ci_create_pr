@@ -39,13 +39,6 @@ jobs:
               repo: context.repo.repo,
             });
 
-            releases.filter(release => {
-              console.log("release", release)
-              if (release.draft) {
-                console.log("draft release:", release);
-                console.log(currentServiceLabelNames.includes(release.name));
-              }
-            });
             const draftReleases = releases.filter(release => release.draft && currentServiceLabelNames.includes(release.name));
 
             const servicesToCreate = currentServiceLabelNames.filter(serviceName => draftReleases.find(release => release.name === serviceName) === undefined)
