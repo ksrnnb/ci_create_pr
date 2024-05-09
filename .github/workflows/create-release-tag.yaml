@@ -34,6 +34,8 @@ jobs:
               repo: context.repo.repo,
             });
 
+            console.log(releases);
+
             // TODO: filter currentServiceLabelNames を含む draft の PR が欲しい。
             const draftReleases = releases.data.filter(release => release.draft && currentServiceLabelNames.includes(release.name));
 
