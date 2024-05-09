@@ -37,6 +37,7 @@ jobs:
             });
 
             releases.filter(release => {
+              console.log("release", release)
               if (release.draft) {
                 console.log("draft release:", release);
                 console.log(currentServiceLabelNames.includes(release.name));
