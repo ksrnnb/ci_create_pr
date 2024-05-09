@@ -21,9 +21,9 @@ jobs:
             const labelColor = '0052CD';
 
             const currentLabels = await github.rest.issues.listLabelsOnIssue({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
             })
 
             // filter by color to get services' label
@@ -32,8 +32,8 @@ jobs:
             // TODO: 1000件は取得したい。
             // Fetch existing draft release
             const releases = await github.rest.repos.listReleases({
-                context.repo.owner,
-                 context.repo.repo,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
             });
 
             // TODO: filter currentServiceLabelNames を含む draft の PR が欲しい。
