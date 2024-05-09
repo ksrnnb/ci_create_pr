@@ -67,7 +67,7 @@ jobs:
                 await github.rest.repos.createRelease({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    // tag_name: "draft-" + new Date().toISOString(), draft ならたぶんタグなしで作れる？ なければ自動生成？
+                    tag_name: `${service}-draft-${new Date().toISOString()}`,
                     name: service,
                     body: newBody,
                     draft: true
