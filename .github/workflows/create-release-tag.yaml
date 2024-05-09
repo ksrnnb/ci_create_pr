@@ -39,7 +39,7 @@ jobs:
             // TODO: filter currentServiceLabelNames を含む draft の PR が欲しい。
             const draftReleases = releases.data.filter(release => release.draft && currentServiceLabelNames.includes(release.name));
 
-            const servicesToCreate = currentKindLabelNames.filter(serviceName => draftReleases.find(release => release.name === serviceName).length === 0)
+            const servicesToCreate = currentServiceLabelNames.filter(serviceName => draftReleases.find(release => release.name === serviceName).length === 0)
             const prTitle = context.payload.pull_request.title;
             const prNumber = context.payload.pull_request.number;
             let body = draftRelease ? draftRelease.body : '';
