@@ -48,7 +48,6 @@ jobs:
             console.log("servicesToCreate", servicesToCreate);
             console.log("prTitle", prTitle);
             console.log("prNumber", prNumber);
-            console.log("body", body);
             return;
             // update draft release
             for (const draftRelease of draftReleases) {
