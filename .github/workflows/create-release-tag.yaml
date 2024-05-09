@@ -4,8 +4,6 @@ on:
   pull_request:
     # TODO: closed だけにする
     types: [opened, edited, synchronize]
-    # branches:
-    #   - main
 
 jobs:
   update-release-draft:
@@ -55,8 +53,8 @@ jobs:
             for (const draftRelease of draftReleases) {
                 const body = `${draftRelease.body}\n- ${prTitle} (#${prNumber})`;
                 await github.rest.repos.updateRelease({
-                    owner,
-                    repo,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
                     release_id: draftRelease.id,
                     body
                 });
@@ -67,8 +65,8 @@ jobs:
                 const body = `${prTitle} (#${prNumber})`;
 
                 await github.rest.repos.createRelease({
-                    owner,
-                    repo,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
                     // tag_name: "draft-" + new Date().toISOString(), draft ならたぶんタグなしで作れる？ なければ自動生成？
                     name: service,
                     body: body,
