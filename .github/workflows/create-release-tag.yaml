@@ -42,8 +42,6 @@ jobs:
             const servicesToCreate = currentServiceLabelNames.filter(serviceName => draftReleases.find(release => release.name === serviceName) !== undefined)
             const prTitle = context.payload.pull_request.title;
             const prNumber = context.payload.pull_request.number;
-            let body = draftRelease ? draftRelease.body : '';
-            body += `\n- ${prTitle} (#${prNumber})`;
 
             console.log("draftReleases", draftReleases);
             console.log("currentServiceLabelNames", currentServiceLabelNames);
@@ -54,6 +52,7 @@ jobs:
             return;
             // update draft release
             for (const draftRelease of draftReleases) {
+                const body += `${draftRelease.body}\n- ${prTitle} (#${prNumber})`;
                 await github.rest.repos.updateRelease({
                     owner,
                     repo,
@@ -64,6 +63,8 @@ jobs:
 
             // Create new draft
             for (const service of servicesToCreate) {
+                const body = `${prTitle} (#${prNumber})`;
+
                 await github.rest.repos.createRelease({
                     owner,
                     repo,
