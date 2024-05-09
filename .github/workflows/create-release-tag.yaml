@@ -52,7 +52,7 @@ jobs:
             return;
             // update draft release
             for (const draftRelease of draftReleases) {
-                const body += `${draftRelease.body}\n- ${prTitle} (#${prNumber})`;
+                const body = `${draftRelease.body}\n- ${prTitle} (#${prNumber})`;
                 await github.rest.repos.updateRelease({
                     owner,
                     repo,
