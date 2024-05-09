@@ -3,7 +3,7 @@ name: Update Release Draft
 on:
   pull_request:
     # TODO: closed だけにする
-    types: [closed, edited]
+    types: [closed, edited, synchronize]
     # branches:
     #   - main
 
