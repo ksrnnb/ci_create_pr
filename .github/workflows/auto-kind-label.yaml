@@ -24,8 +24,10 @@ jobs:
             const NEW_FEATURE = 'New feature / Improvement';
             const RELEASE = 'Release';
             const OTHERS = 'Others';
+            const kindLabelNames = new Set([BUG_FIX, NEW_FEATURE, RELEASE, OTHERS]);
+
             const payload = context.payload.pull_request;
-            const currentKindLabelNames = payload.labels.map(label => label.name);
+            const currentLabelNames = payload.labels.map(label => label.name);
             const title = payload.title;
             const newLabelName = (() => {
               if (title.startsWith("feat")) {
@@ -39,8 +41,16 @@ jobs:
               }
               return OTHERS;
             })();
-            const labelsToAdd = currentKindLabelNames.includes(newLabelName) ? [] : [newLabelName];
-            const labelsToRemove = currentKindLabelNames.filter(currentKindLabelName => currentKindLabelName !== newLabelName);
+
+            const labelsToAdd = currentLabelNames.includes(newLabelName) ? [] : [newLabelName];
+            const labelsToRemove = currentLabelNames.filter(currentKindLabelName => currentKindLabelName !== newLabelName && kindLabelNames.has(currentKindLabelName));
+
+            // output log
+            console.log("newLabelName", newLabelName);
+            console.log("currentLabelNames", currentLabelNames);
+            console.log("labelsToAdd", labelsToAdd);
+            console.log("labelsToRemove", labelsToRemove);
+
             // add kind label
             if (labelsToAdd.length > 0) {
               await github.rest.issues.addLabels({
