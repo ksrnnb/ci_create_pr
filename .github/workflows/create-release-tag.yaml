@@ -1,0 +1,75 @@
+name: Update Release Draft
+
+on:
+  pull_request:
+    # TODO: closed だけにする
+    types: [closed, edited]
+    # branches:
+    #   - main
+
+jobs:
+  update-release-draft:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Create or Update Release Draft
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labelColor = '0052CD';
+
+            const currentLabels = await github.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+            })
+
+            // filter by color to get services' label
+            const currentServiceLabelNames = currentLabels.data.filter(label => label.color === labelColor).map(label => label.name);
+
+            // TODO: 1000件は取得したい。
+            // Fetch existing draft release
+            const releases = await github.rest.repos.listReleases({
+                owner,
+                repo
+            });
+
+            // TODO: filter currentServiceLabelNames を含む draft の PR が欲しい。
+            const draftReleases = releases.data.filter(release => release.draft && currentServiceLabelNames.includes(release.name));
+
+            const servicesToCreate = currentKindLabelNames.filter(serviceName => draftReleases.find(release => release.name === serviceName).length === 0)
+            const prTitle = context.payload.pull_request.title;
+            const prNumber = context.payload.pull_request.number;
+            let body = draftRelease ? draftRelease.body : '';
+            body += `\n- ${prTitle} (#${prNumber})`;
+
+            console.log("draftReleases", draftReleases);
+            console.log("currentServiceLabelNames", currentServiceLabelNames);
+            console.log("servicesToCreate", servicesToCreate);
+            console.log("prTitle", prTitle);
+            console.log("prNumber", prNumber);
+            console.log("body", body);
+            return;
+            // update draft release
+            for (const draftRelease of draftReleases) {
+                await github.rest.repos.updateRelease({
+                    owner,
+                    repo,
+                    release_id: draftRelease.id,
+                    body
+                });
+            }
+
+            // Create new draft
+            for (const service of servicesToCreate) {
+                await github.rest.repos.createRelease({
+                    owner,
+                    repo,
+                    // tag_name: "draft-" + new Date().toISOString(), draft ならたぶんタグなしで作れる？ なければ自動生成？
+                    name: service,
+                    body: body,
+                    draft: true
+                });
+            }
