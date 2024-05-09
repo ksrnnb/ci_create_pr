@@ -29,9 +29,11 @@ jobs:
             // filter by color to get services' label
             const currentServiceLabelNames = currentLabels.data.filter(label => label.color === labelColor).map(label => label.name);
 
+            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+
             // paginate method get all data
             // https://docs.github.com/ja/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-using-the-octokitjs-pagination-method
-            const releases = await github.paginate(github.rest.repos.listReleases, {
+            const releases = await octokit.paginate(octokit.rest.repos.listReleases, {
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
