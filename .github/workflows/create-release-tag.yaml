@@ -2,12 +2,11 @@ name: Update Release Draft
 
 on:
   pull_request:
-    # TODO: closed だけにする
-    types: [opened, edited, synchronize]
+    types: [closed]
 
 jobs:
   update-release-draft:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
