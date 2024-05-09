@@ -43,6 +43,8 @@ jobs:
             const prTitle = context.payload.pull_request.title;
             const prNumber = context.payload.pull_request.number;
 
+            console.log(context.payload.pull_request);
+
             console.log("draftReleases", draftReleases);
             console.log("currentServiceLabelNames", currentServiceLabelNames);
             console.log("servicesToCreate", servicesToCreate);
@@ -51,7 +53,7 @@ jobs:
 
             // update draft release
             for (const draftRelease of draftReleases) {
-                const body = `${draftRelease.body}\n- ${prTitle} (#${prNumber})`;
+                const body = `${draftRelease.body}\n- ${prTitle} #${prNumber}`;
                 await github.rest.repos.updateRelease({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
