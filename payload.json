@@ -1,6 +1,6 @@
 {
     "inputs": {
         "service": "bar",
-        "version": "patch"
+        "versionType": "patch"
     }
 }
