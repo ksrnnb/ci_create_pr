@@ -12,7 +12,7 @@ on:
           - foo
           - hoge
           - piyo
-      version:
+      versionType:
         description: "Version to increment"
         required: true
         default: "patch"
@@ -33,9 +33,10 @@ jobs:
         with:
           script: |
             const service = context.payload.inputs.service;
-            const version = context.payload.inputs.version;
+            const versionType = context.payload.inputs.versionType;
+
             console.log("service", service);
-            console.log("version", version);
+            console.log("versionType", versionType);
 
             // paginate method get all data
             // https://docs.github.com/ja/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-using-the-octokitjs-pagination-method
@@ -45,13 +46,8 @@ jobs:
             });
 
             const latestRelease = releases.find(release => !release.draft && release.name.includes(service));
-            const draftRelease = releases.filter(release => release.draft && service === release.name);
+            const draftRelease = releases.find(release => release.draft && service === release.name);
 
-            releases.forEach(release => {
-              if (release.draft) {
-                console.log(release);
-              }
-            })
             console.log("latestRelease", latestRelease);
             console.log("draftRelease", draftRelease);
 
@@ -60,13 +56,30 @@ jobs:
               return;
             }
 
+            let newVersion;
+
             if (!latestRelease) {
-              // TODO: タグのバージョンが特殊なだけで、draft の release を publish する。
-              return;
+              // if this is first release, base version is "0.0.0"
+              newVersion = nextVersion("0.0.0", versionType);
+            } else {
+              const latestVersion = latestRelease.tag_name.split("/").at(2);
+              if (!latestVersion) {
+                  throw Error(`latest version cannot be got from tag ${latestRelease.tag_name}`);
+              }
+              newVersion = nextVersion(latestVersion, versionType);
             }
 
+            const newTagName = `microservices/${service}/${newVersion}`;
+
             if (!draftRelease) {
-              // つくる？
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: newTagName,
+                name: newTagName,
+                body: `there is no difference between previous release ${latestRelease?.tag_name} and \`${newTagName}\``,
+                draft: false
+              });
               return;
             }
 
@@ -74,29 +87,29 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: draftRelease.id,
-              tag_name: "TODO: new tag name",
+              tag_name: newTagName,
+              name: newTagName,
               draft: false
             });
 
-            // update draft release
-            for (const draftRelease of draftReleases) {
-                const body = `${draftRelease.body}\n${newBody}`;
-                await github.rest.repos.updateRelease({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    release_id: draftRelease.id,
-                    body
-                });
-            }
+            const nextVersion = (currentVersion, versionType) => {
+              const versions = currentVersion.split(".");
+              if (versions.length !== 3) {
+                throw Error(`version has unexpected format ${currentVersion}, expected format is like "x.y.z"`);
+              }
 
-            // Create new draft
-            for (const service of servicesToCreate) {
-                await github.rest.repos.createRelease({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    tag_name: `${service}-draft-${new Date().toISOString()}`,
-                    name: service,
-                    body: newBody,
-                    draft: true
-                });
+              const intVersions = versions.map(version => Number(version));
+              switch (versionType) {
+                case "major":
+                  intVersions[0]++;
+                  break;
+                case "minor":
+                  intVersions[1]++;
+                  break;
+                case "patch":
+                  intVersions[2]++;
+                  break;
+              }
+
+              return intVersions.join(".");
             }
