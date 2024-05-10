@@ -32,9 +32,10 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const service = github.context.payload.inputs.service;
-            const version = github.context.payload.inputs.version;
-            console.log(service, version);
+            const service = context.payload.inputs.service;
+            const version = context.payload.inputs.version;
+            console.log("service", service);
+            console.log("version", version);
 
             // paginate method get all data
             // https://docs.github.com/ja/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-using-the-octokitjs-pagination-method
@@ -46,6 +47,11 @@ jobs:
             const latestRelease = releases.find(release => !release.draft && release.name.includes(service));
             const draftRelease = releases.filter(release => release.draft && service === release.name);
 
+            releases.forEach(release => {
+              if (release.draft) {
+                console.log(release);
+              }
+            })
             console.log("latestRelease", latestRelease);
             console.log("draftRelease", draftRelease);
 
