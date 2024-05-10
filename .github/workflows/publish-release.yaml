@@ -72,6 +72,8 @@ jobs:
 
             const latestRelease = releases.find(release => !release.draft && release.name.includes(service));
             const draftRelease = releases.find(release => release.draft && service === release.name);
+            const draftReleases = releases.filter(release => release.draft);
+            console.log(draftReleases);
 
             console.log("latestRelease", latestRelease);
             console.log("draftRelease", draftRelease);
