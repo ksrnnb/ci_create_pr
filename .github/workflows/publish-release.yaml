@@ -32,6 +32,28 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const nextVersion = (currentVersion, versionType) => {
+              const versions = currentVersion.split(".");
+              if (versions.length !== 3) {
+                throw Error(`version has unexpected format ${currentVersion}, expected format is like "x.y.z"`);
+              }
+
+              const intVersions = versions.map(version => Number(version));
+              switch (versionType) {
+                case "major":
+                  intVersions[0]++;
+                  break;
+                case "minor":
+                  intVersions[1]++;
+                  break;
+                case "patch":
+                  intVersions[2]++;
+                  break;
+              }
+
+              return intVersions.join(".");
+            }
+
             const service = context.payload.inputs.service;
             const versionType = context.payload.inputs.versionType;
 
@@ -91,25 +113,3 @@ jobs:
               name: newTagName,
               draft: false
             });
-
-            const nextVersion = (currentVersion, versionType) => {
-              const versions = currentVersion.split(".");
-              if (versions.length !== 3) {
-                throw Error(`version has unexpected format ${currentVersion}, expected format is like "x.y.z"`);
-              }
-
-              const intVersions = versions.map(version => Number(version));
-              switch (versionType) {
-                case "major":
-                  intVersions[0]++;
-                  break;
-                case "minor":
-                  intVersions[1]++;
-                  break;
-                case "patch":
-                  intVersions[2]++;
-                  break;
-              }
-
-              return intVersions.join(".");
-            }
