@@ -1,0 +1,96 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: "Service to release"
+        required: true
+        type: choice
+        options:
+          - bar
+          - foo
+          - hoge
+          - piyo
+      version:
+        description: "Version to increment"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  update-release-draft:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Publish Release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const service = github.context.payload.inputs.service;
+            const version = github.context.payload.inputs.version;
+            console.log(service, version);
+
+            // paginate method get all data
+            // https://docs.github.com/ja/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-using-the-octokitjs-pagination-method
+            const releases = await github.paginate(github.rest.repos.listReleases, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            const latestRelease = releases.find(release => !release.draft && release.name.includes(service));
+            const draftRelease = releases.filter(release => release.draft && service === release.name);
+
+            console.log("latestRelease", latestRelease);
+            console.log("draftRelease", draftRelease);
+
+            if (!latestRelease && !draftRelease) {
+              console.error("Both latest release and draft release are not found.");
+              return;
+            }
+
+            if (!latestRelease) {
+              // TODO: タグのバージョンが特殊なだけで、draft の release を publish する。
+              return;
+            }
+
+            if (!draftRelease) {
+              // つくる？
+              return;
+            }
+
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: draftRelease.id,
+              tag_name: "TODO: new tag name",
+              draft: false
+            });
+
+            // update draft release
+            for (const draftRelease of draftReleases) {
+                const body = `${draftRelease.body}\n${newBody}`;
+                await github.rest.repos.updateRelease({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    release_id: draftRelease.id,
+                    body
+                });
+            }
+
+            // Create new draft
+            for (const service of servicesToCreate) {
+                await github.rest.repos.createRelease({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    tag_name: `${service}-draft-${new Date().toISOString()}`,
+                    name: service,
+                    body: newBody,
+                    draft: true
+                });
+            }
