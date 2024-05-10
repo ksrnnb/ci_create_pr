@@ -42,9 +42,12 @@ jobs:
               switch (versionType) {
                 case "major":
                   intVersions[0]++;
+                  intVersions[1] = 0;
+                  intVersions[2] = 0;
                   break;
                 case "minor":
                   intVersions[1]++;
+                  intVersions[2] = 0;
                   break;
                 case "patch":
                   intVersions[2]++;
@@ -67,8 +70,8 @@ jobs:
               repo: context.repo.repo,
             });
 
-            const latestRelease = releases.find(release => !release.draft && release.name.includes(service));
-            const draftRelease = releases.find(release => release.draft && service === release.name);
+            const latestRelease = releases.find(release => !release.draft && release.tag_name.includes(service));
+            const draftRelease = releases.find(release => release.draft && service === release.tag_name);
 
             console.log("latestRelease", latestRelease);
             console.log("draftRelease", draftRelease);
@@ -86,7 +89,7 @@ jobs:
             } else {
               const latestVersion = latestRelease.tag_name.split("/").at(2);
               if (!latestVersion) {
-                  throw Error(`latest version cannot be got from tag ${latestRelease.tag_name}`);
+                throw Error(`latest version cannot be got from tag ${latestRelease.tag_name}`);
               }
               newVersion = nextVersion(latestVersion, versionType);
             }
