@@ -18,9 +18,9 @@ on:
         default: "patch"
         type: choice
         options:
-          - patch
-          - minor
           - major
+          - minor
+          - patch
 
 jobs:
   update-release-draft:
