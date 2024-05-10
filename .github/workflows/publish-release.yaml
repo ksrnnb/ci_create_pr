@@ -70,8 +70,10 @@ jobs:
               repo: context.repo.repo,
             });
 
-            const latestRelease = releases.find(release => !release.draft && release.tag_name.includes(service));
-            const draftRelease = releases.find(release => release.draft && service === release.tag_name);
+            const latestRelease = releases.find(release => !release.draft && release.name.includes(service));
+            const draftRelease = releases.find(release => release.draft && service === release.name);
+            const draftReleases = releases.filter(release => release.draft);
+            console.log(draftReleases);
 
             console.log("latestRelease", latestRelease);
             console.log("draftRelease", draftRelease);
@@ -87,9 +89,9 @@ jobs:
               // if this is first release, base version is "0.0.0"
               newVersion = nextVersion("0.0.0", versionType);
             } else {
-              const latestVersion = latestRelease.tag_name.split("/").at(2);
+              const latestVersion = latestRelease.name.split("/").at(2);
               if (!latestVersion) {
-                throw Error(`latest version cannot be got from tag ${latestRelease.tag_name}`);
+                throw Error(`latest version cannot be got from tag ${latestRelease.name}`);
               }
               newVersion = nextVersion(latestVersion, versionType);
             }
@@ -102,7 +104,7 @@ jobs:
                 repo: context.repo.repo,
                 tag_name: newTagName,
                 name: newTagName,
-                body: `there is no difference between previous release \`${latestRelease?.tag_name}\` and \`${newTagName}\``,
+                body: `there is no difference between previous release \`${latestRelease?.name}\` and \`${newTagName}\``,
                 draft: false
               });
               return;
