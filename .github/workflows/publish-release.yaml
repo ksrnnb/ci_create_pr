@@ -8,35 +8,10 @@ on:
         required: true
         type: choice
         options:
-          - ai
-          - algorithm
-          - assessment
-          - ats
-          - auth
-          - batch
-          - challenge
-          - codescore
-          - company
-          - compile
-          - database
-          - demo
-          - detection
-          - evaluation
-          - exporter
-          - freepad
-          - livecoding
-          - multi-choice
-          - notification
-          - payment
-          - project
-          - question
-          - quiz
-          - remote
-          - security
-          - slack
-          - spot
-          - statistics
-          - system-design
+          - bar
+          - foo
+          - hoge
+          - piyo
       versionType:
         description: "Version to increment"
         required: true
