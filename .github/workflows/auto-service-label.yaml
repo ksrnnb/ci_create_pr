@@ -33,9 +33,9 @@ jobs:
           script: |
             const labelsToAdd = new Set();
             const labelColor = '0052CD';
-            const changedDirs = "${{ steps.changed-microservice-files.outputs.all_changed_files }}".split(" ");
+            const changedFiles = "${{ steps.changed-microservice-files.outputs.all_changed_files }}".split(" ");
 
-            console.log(changedDirs)
+            console.log(changedFiles)
 
             const currentLabels = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
@@ -48,10 +48,17 @@ jobs:
             const currentServiceLabelNames = currentLabels.data.filter(label => label.color === labelColor).map(label => label.name);
             const changedServiceNames = new Set();
 
-            changedDirs.forEach((serviceName) => {
-              changedServiceNames.add(serviceName);
-              if (!currentServiceLabelNames.includes(serviceName)) {
-                labelsToAdd.add(serviceName);
+            changedFiles.forEach((file) => {
+              const directories = file.split('/');
+              if (directories.length > 1) {
+                // file => microservices/{service_name}/**
+                // directories => ["microservices", {service_name}, ...]
+                const serviceName = directories[1];
+                changedServiceNames.add(serviceName);
+                // https://docs.github.com/ja/rest/issues/labels?apiVersion=2022-11-28#list-labels-for-an-issue
+                if (!currentServiceLabelNames.includes(serviceName)) {
+                  labelsToAdd.add(serviceName);
+                }
               }
             });
 
