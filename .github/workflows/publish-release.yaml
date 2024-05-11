@@ -8,10 +8,35 @@ on:
         required: true
         type: choice
         options:
-          - bar
-          - foo
-          - hoge
-          - piyo
+          - ai
+          - algorithm
+          - assessment
+          - ats
+          - auth
+          - batch
+          - challenge
+          - codescore
+          - company
+          - compile
+          - database
+          - demo
+          - detection
+          - evaluation
+          - exporter
+          - freepad
+          - livecoding
+          - multi-choice
+          - notification
+          - payment
+          - project
+          - question
+          - quiz
+          - remote
+          - security
+          - slack
+          - spot
+          - statistics
+          - system-design
       versionType:
         description: "Version to increment"
         required: true
@@ -79,8 +104,7 @@ jobs:
             console.log("draftRelease", draftRelease);
 
             if (!latestRelease && !draftRelease) {
-              console.error("Both latest release and draft release are not found.");
-              return;
+              throw Error("Both latest release and draft release are not found.");
             }
 
             let newVersion;
