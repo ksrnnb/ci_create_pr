@@ -18,6 +18,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const excludeList = ['foo'];
             const labelColor = '0052CD';
 
             const currentLabels = await github.rest.issues.listLabelsOnIssue({
@@ -38,7 +39,7 @@ jobs:
 
             const draftReleases = releases.filter(release => release.draft && currentServiceLabelNames.includes(release.name));
 
-            const servicesToCreate = currentServiceLabelNames.filter(serviceName => draftReleases.find(release => release.name === serviceName) === undefined)
+            const servicesToCreate = currentServiceLabelNames.filter(serviceName => !excludeList.includes(serviceName) && draftReleases.find(release => release.name === serviceName) === undefined);
             const prTitle = context.payload.pull_request.title;
             const prNumber = context.payload.pull_request.number;
             const authorId = context.payload.pull_request.user.login;
