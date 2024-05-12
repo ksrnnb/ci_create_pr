@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: bar
+    tags.datadoghq.com/version: "0.0.0"
+  name: bar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bar
+  template:
+    metadata:
+      labels:
+        app: bar
+        tags.datadoghq.com/version: "0.0.0"
+    spec:
+      containers:
+        - name: bar
+          image: hogehogepiyopiyo/bar:0.0.0
+        - name: nginx
+          image: nginx:1.26.0
