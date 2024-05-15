@@ -27,7 +27,7 @@ jobs:
               issue_number: context.payload.pull_request.number,
             })
 
-            for (const label of currentLabels) {
+            for (const label of currentLabels.data) {
               if (label.name.toLowerCase() === "release") {
                 // release PR is not added to Release description
                 return;
