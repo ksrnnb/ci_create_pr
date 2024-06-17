@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: bar
-    tags.datadoghq.com/version: "0.0.5"
+    tags.datadoghq.com/version: "0.0.6"
   name: bar
 spec:
   replicas: 1
@@ -14,10 +14,10 @@ spec:
     metadata:
       labels:
         app: bar
-        tags.datadoghq.com/version: "0.0.5"
+        tags.datadoghq.com/version: "0.0.6"
     spec:
       containers:
         - name: bar
-          image: hogehogepiyopiyo/bar:0.0.5
+          image: hogehogepiyopiyo/bar:0.0.6
         - name: nginx
           image: nginx:1.26.0
